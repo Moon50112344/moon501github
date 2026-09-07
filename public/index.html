@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitShowcase | Project Gallery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0f172a] text-slate-200 font-['Inter'] antialiased min-h-screen flex flex-col">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow">
+    <div class="py-12 md:py-20 lg:py-24">
+      <!-- Header -->
+      <header class="mb-16 md:mb-24">
+        <h1 class="text-5xl font-extrabold text-white tracking-tighter sm:text-6xl mb-6">
+          Git<span class="text-blue-500">Showcase</span>
+        </h1>
+        <p class="text-xl text-slate-400 max-w-2xl leading-relaxed">
+          Explore a curated collection of software architecture, engineering projects, and open-source contributions.
+        </p>
+      </header>
+      <!-- Main Content -->
+      <main id="repo-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        <!-- Skeleton Loading State -->
+        <div class="animate-pulse bg-slate-800/30 rounded-2xl h-96 border border-slate-800/50"></div>
+        <div class="animate-pulse bg-slate-800/30 rounded-2xl h-96 border border-slate-800/50"></div>
+        <div class="animate-pulse bg-slate-800/30 rounded-2xl h-96 border border-slate-800/50"></div>
+      </main>
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden flex-col items-center justify-center py-32 text-center">
+        <div class="p-6 bg-slate-900 rounded-full mb-6">
+          <i data-lucide="layers" class="w-12 h-12 text-slate-700" title="No Projects"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">No projects found</h3>
+        <p class="text-slate-400 max-w-xs mx-auto">The portfolio is currently empty. Check back soon for new additions.</p>
+      </div>
+    </div>
+  </div>
+  <footer class="border-t border-slate-800/50 py-12 bg-slate-950/20 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="text-slate-500 text-sm">
+        &copy; 2024 GitShowcase. Powered by Hono & Cloudflare Workers.
+      </div>
+      <div class="flex items-center gap-8 text-slate-600 text-xs font-medium uppercase tracking-widest">
+        <span>Verified Architecture Portfolio</span>
+      </div>
+    </div>
+  </footer>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

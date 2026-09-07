@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | GitShowcase</title>
+  <script>
+    if (localStorage.getItem('is_admin') !== 'true') {
+      window.location.href = '/login';
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0f172a] text-slate-200 font-['Inter'] antialiased min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-8 md:py-12 lg:py-16">
+      <nav class="mb-12 flex justify-between items-center">
+        <a href="/" class="text-blue-400 hover:text-blue-300 flex items-center gap-2 transition-colors font-medium">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          Back to Gallery
+        </a>
+        <button id="logout-btn" class="text-slate-400 hover:text-red-400 flex items-center gap-2 transition-colors">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          Logout
+        </button>
+      </nav>
+      <div class="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
+        <!-- Add Form -->
+        <section class="lg:col-span-2">
+          <div class="mb-8">
+            <h2 class="text-2xl font-bold text-white mb-2">Add New Project</h2>
+            <p class="text-slate-400 text-sm">Register a new repository to the public gallery.</p>
+          </div>
+          <form id="add-repo-form" class="space-y-6 bg-slate-900/50 p-6 md:p-8 rounded-2xl border border-slate-800 glass">
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Project Name</label>
+              <input type="text" name="name" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all custom-placeholder" placeholder="My Awesome Tool">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Description</label>
+              <textarea name="description" rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all custom-placeholder" placeholder="Briefly explain what this project does..."></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Cover Image URL</label>
+              <input type="url" name="imageUrl" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all custom-placeholder" placeholder="https://images.unsplash.com/...">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">GitHub URL</label>
+              <input type="url" name="repoUrl" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all custom-placeholder" placeholder="https://github.com/user/repo">
+            </div>
+            <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 active:scale-[0.98]">
+              <i data-lucide="plus-circle" class="w-5 h-5"></i>
+              Add Repository
+            </button>
+          </form>
+        </section>
+        <!-- Management List -->
+        <section class="lg:col-span-3">
+          <div class="mb-8">
+            <h2 class="text-2xl font-bold text-white mb-2">Manage Existing</h2>
+            <p class="text-slate-400 text-sm">Update or remove projects from the showcase.</p>
+          </div>
+          <div id="admin-repo-list" class="space-y-4">
+            <!-- Loading State -->
+            <div class="animate-pulse flex gap-4 p-4 bg-slate-800/20 rounded-xl">
+              <div class="w-12 h-12 bg-slate-800 rounded-lg"></div>
+              <div class="flex-1 space-y-2 py-1">
+                <div class="h-3 bg-slate-800 rounded-lg w-1/4"></div>
+                <div class="h-3 bg-slate-800 rounded-lg w-1/2"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Admin Empty State -->
+          <div id="admin-empty-state" class="hidden flex flex-col items-center justify-center py-12 text-center bg-slate-900/30 border border-dashed border-slate-800 rounded-2xl">
+            <i data-lucide="folder-open" class="w-10 h-10 text-slate-700 mb-3" title="Empty List"></i>
+            <p class="text-slate-500">No projects registered yet.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script src="/admin.js" type="module"></script>
+</body>
+</html>
