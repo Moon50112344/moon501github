@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (result.success) localStorage.setItem('is_admin', 'true');
           
           window.location.href = '/repo';
+          document.cookie = 'is_authed=true; path=/; SameSite=Lax';
         } else {
           if (errorMessage) {
             errorMessage.classList.remove('hidden');
