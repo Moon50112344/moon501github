@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (result.token) localStorage.setItem('auth_token', result.token);
           if (result.success) localStorage.setItem('is_admin', 'true');
           
-          window.location.href = '/admin';
+          window.location.href = '/repo';
         } else {
           if (errorMessage) {
             errorMessage.classList.remove('hidden');
