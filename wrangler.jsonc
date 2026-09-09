@@ -3,6 +3,15 @@
   "name": "git-showcase-p4q2ivxwtwjeus5n9hcsp",
   "main": "worker/index.js",
   "compatibility_date": "2025-04-24",
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "moon501github-db",
+      "database_id": "76f98924-1fab-4af7-b000-238bb587399b"
+    }
+  ],
+
   "assets": {
     "not_found_handling": "single-page-application",
     "directory": "./public"
