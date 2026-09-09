@@ -4,6 +4,10 @@ import { cors } from 'hono/cors'
 
 const app = new Hono()
 
+// ========================================================
+// CORS
+// ========================================================
+
 app.use('/api/*', cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -40,21 +44,15 @@ app.get('/api/repos', async (c) => {
   c.header('Cache-Control', 'no-store, max-age=0')
 
   try {
-    const result = await c.env.DB
+    const { results } = await c.env.DB
       .prepare(`
-        SELECT
-          id,
-          name,
-          description,
-          imageUrl,
-          repoUrl
+        SELECT id, name, description, imageUrl, repoUrl
         FROM repositories
         ORDER BY created_at DESC
       `)
       .all()
 
-    return c.json(result.results || [])
-
+    return c.json(results || [])
   } catch (err) {
     console.error('Get repos error:', err)
 
