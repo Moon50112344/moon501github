@@ -35,7 +35,7 @@ const AUTH_TOKEN = 'authenticated_session_v1';
 // Middleware xác thực quyền Admin (Chỉ áp dụng cho các cổng API Thay đổi dữ liệu như POST/DELETE)
 const adminAuth = async (c, next) => {
 const authHeader = c.req.header('Authorization');
-if (authHeader !== `Bearer ${AUTH_TOKEN}`) {
+if (authHeader !== Bearer ${AUTH_TOKEN}) {
 const ip = c.req.header('CF-Connecting-IP') || 'Unknown IP';
 console.warn([Security] Unauthorized access attempt blocked from ${ip} to ${c.req.path});
 return c.json({ error: 'Unauthorized' }, 401);
