@@ -47,16 +47,28 @@ document.addEventListener('DOMContentLoaded', () => {
           
           window.location.href = '/repo';
           document.cookie = 'is_authed=true; path=/; SameSite=Lax';
-        } else {
-          if (errorMessage) {
-            errorMessage.classList.remove('hidden');
-            errorMessage.classList.add('animate-shake');
-            setTimeout(() => errorMessage.classList.remove('animate-shake'), 400);
-          }
-          loginBtn.disabled = false;
-          loginBtn.innerHTML = originalHtml;
-          if (window.lucide) window.lucide.createIcons();
-        }
+      } else {
+  if (response.status === 429) {
+    window.location.href = '/429.html'
+    return
+  }
+
+  if (errorMessage) {
+    errorMessage.classList.remove('hidden')
+    errorMessage.classList.add('animate-shake')
+
+    setTimeout(() => {
+      errorMessage.classList.remove('animate-shake')
+    }, 400)
+  }
+
+  loginBtn.disabled = false
+  loginBtn.innerHTML = originalHtml
+
+  if (window.lucide) {
+    window.lucide.createIcons()
+  }
+        
       } catch (err) {
         console.error('Login error:', err);
         loginBtn.disabled = false;
