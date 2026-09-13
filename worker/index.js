@@ -15,6 +15,13 @@ app.use('/api/*', cors({
 }))
 
 const AUTH_TOKEN = 'authenticated_session_v1'
+const loginAttempts = new Map()
+
+const LOGIN_LIMITS = {
+  WARNING_DELAY: 5 * 1000,
+  TEMP_BLOCK: 60 * 1000,
+  LONG_BLOCK: 5 * 60 * 1000
+}
 
 // ========================================================
 // ADMIN AUTH
@@ -65,25 +72,80 @@ app.get('/api/repos', async (c) => {
 // ========================================================
 // API: LOGIN
 // ========================================================
-
 app.post('/api/login', async (c) => {
   c.header('Cache-Control', 'no-store, max-age=0')
+
+  const ip = c.req.header('CF-Connecting-IP') || 'unknown'
+  const now = Date.now()
+
+  let state = loginAttempts.get(ip)
+
+  if (!state) {
+    state = {
+      failures: 0,
+      blockedUntil: 0,
+      blockLevel: 0
+    }
+    loginAttempts.set(ip, state)
+  }
+
+  // Đang bị giới hạn
+  if (state.blockedUntil > now) {
+    const retryAfter = Math.ceil(
+      (state.blockedUntil - now) / 1000
+    )
+
+    return c.json({
+      error: 'Too Many Requests',
+      retryAfter
+    }, 429, {
+      'Retry-After': String(retryAfter)
+    })
+  }
 
   try {
     const body = await c.req.json()
 
     if (!body || typeof body.password !== 'string') {
-      return c.json({ error: 'Invalid Request' }, 400)
+      return c.json({
+        error: 'Invalid Request'
+      }, 400)
     }
 
     const trimmedPassword = body.password.trim()
 
+    // GIỮ NGUYÊN MẬT KHẨU HIỆN TẠI CỦA MÀY Ở DÒNG NÀY
     if (trimmedPassword === 'happy106725') {
+      // Đăng nhập đúng → reset giới hạn
+      loginAttempts.delete(ip)
+
       return c.json({
         success: true,
         token: AUTH_TOKEN
       })
     }
+
+    // Sai mật khẩu
+    state.failures++
+
+    // 6–9 lần sai → bắt buộc chờ 5 giây
+    if (state.failures >= 6 && state.failures < 10) {
+      state.blockedUntil = now + LOGIN_LIMITS.WARNING_DELAY
+    }
+
+    // Lần sai thứ 10 → khóa 1 phút
+    if (state.failures === 10) {
+      state.blockLevel = 1
+      state.blockedUntil = now + LOGIN_LIMITS.TEMP_BLOCK
+    }
+
+    // Sau khi đã từng bị khóa mà tiếp tục dò → 5 phút
+    if (state.failures > 10) {
+      state.blockLevel = 2
+      state.blockedUntil = now + LOGIN_LIMITS.LONG_BLOCK
+    }
+
+    loginAttempts.set(ip, state)
 
     return c.json({
       error: 'Unauthorized'
@@ -97,7 +159,6 @@ app.post('/api/login', async (c) => {
     }, 400)
   }
 })
-
 // ========================================================
 // API: ADD REPOSITORY
 // ========================================================
