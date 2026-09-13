@@ -16,20 +16,114 @@ app.use('/api/*', cors({
 const AUTH_TOKEN = 'authenticated_session_v1'
 
 // ========================================================
-// LOGIN RATE LIMIT
+// GLOBAL RATE LIMIT / 429
 // ========================================================
-const LOGIN_WARNING_DELAY = 5000
-const LOGIN_TEMP_BLOCK = 60000
-const LOGIN_LONG_BLOCK = 300000
+
+const getClientIP = (c) => {
+  return c.req.header('CF-Connecting-IP') || 'Unknown IP'
+}
+
+// Những trang này vẫn phải mở được khi IP đang bị khóa
+const isPublicWhileBlocked = (path) => {
+  if (path === '/login') return true
+  if (path === '/429.html') return true
+
+  // Cho phép các file giao diện tải bình thường
+  if (
+    path.startsWith('/assets/') ||
+    path.endsWith('.css') ||
+    path.endsWith('.js') ||
+    path.endsWith('.png') ||
+    path.endsWith('.jpg') ||
+    path.endsWith('.jpeg') ||
+    path.endsWith('.webp') ||
+    path.endsWith('.svg') ||
+    path.endsWith('.ico') ||
+    path.endsWith('.woff') ||
+    path.endsWith('.woff2')
+  ) {
+    return true
+  }
+
+  return false
+}
+
+// Kiểm tra IP đã bị khóa toàn hệ thống chưa
+app.use('*', async (c, next) => {
+  const path = c.req.path
+
+  if (isPublicWhileBlocked(path)) {
+    return next()
+  }
+
+  // Không có KV thì không làm hỏng website
+  if (!c.env.LOGIN_RATE_LIMIT) {
+    return next()
+  }
+
+  const ip = getClientIP(c)
+
+  try {
+    const key = `ratelimit:${ip}`
+    const raw = await c.env.LOGIN_RATE_LIMIT.get(key)
+
+    if (!raw) {
+      return next()
+    }
+
+    const state = JSON.parse(raw)
+    const now = Date.now()
+
+    // Chưa hết thời gian khóa
+    if (state.blockedUntil && state.blockedUntil > now) {
+      const retryAfter = Math.ceil(
+        (state.blockedUntil - now) / 1000
+      )
+
+      c.header('Retry-After', String(retryAfter))
+      c.header('Cache-Control', 'no-store, max-age=0')
+
+      return c.json({
+        error: 'Too Many Requests',
+        message: 'Your IP is temporarily blocked.',
+        retryAfter
+      }, 429)
+    }
+
+    // Hết hạn khóa
+    // Nếu đây là block cấp 1 và người đó tiếp tục spam,
+    // lần khóa tiếp theo sẽ dài hơn.
+    if (state.blockedUntil && state.blockedUntil <= now) {
+      state.blockedUntil = 0
+
+      await c.env.LOGIN_RATE_LIMIT.put(
+        key,
+        JSON.stringify(state),
+        {
+          expirationTtl: 600
+        }
+      )
+    }
+
+    return next()
+
+  } catch (err) {
+    console.error('Rate limit check error:', err)
+
+    // Rate limit lỗi thì không được làm sập website
+    return next()
+  }
+})
 
 // ========================================================
 // ADMIN AUTH
 // ========================================================
+
 const adminAuth = async (c, next) => {
   const authHeader = c.req.header('Authorization')
 
   if (authHeader !== `Bearer ${AUTH_TOKEN}`) {
-    const ip = c.req.header('CF-Connecting-IP') || 'Unknown IP'
+    const ip = getClientIP(c)
 
     console.warn(
       `[Security] Unauthorized access attempt blocked from ${ip} to ${c.req.path}`
@@ -44,6 +138,7 @@ const adminAuth = async (c, next) => {
 // ========================================================
 // API: GET REPOSITORIES
 // ========================================================
+
 app.get('/api/repos', async (c) => {
   c.header('Cache-Control', 'no-store, max-age=0')
 
@@ -70,43 +165,14 @@ app.get('/api/repos', async (c) => {
 // ========================================================
 // API: LOGIN
 // ========================================================
+
 app.post('/api/login', async (c) => {
   c.header('Cache-Control', 'no-store, max-age=0')
 
+  const ip = getClientIP(c)
+  const key = `ratelimit:${ip}`
+
   try {
-    const ip = c.req.header('CF-Connecting-IP') || 'Unknown IP'
-    const key = `login:${ip}`
-    const now = Date.now()
-
-    // Lấy trạng thái từ Cloudflare KV
-    let state = await c.env.LOGIN_RATE_LIMIT.get(key, 'json')
-
-    if (!state) {
-      state = {
-        failures: 0,
-        blockedUntil: 0
-      }
-    }
-
-    // ====================================================
-    // ĐANG BỊ KHÓA
-    // ====================================================
-    if (state.blockedUntil > now) {
-      const remaining = Math.ceil(
-        (state.blockedUntil - now) / 1000
-      )
-
-      c.header('Retry-After', String(remaining))
-
-      return c.json({
-        error: 'Too Many Requests',
-        retryAfter: remaining
-      }, 429)
-    }
-
-    // ====================================================
-    // ĐỌC REQUEST
-    // ====================================================
     const body = await c.req.json()
 
     if (!body || typeof body.password !== 'string') {
@@ -118,11 +184,72 @@ app.post('/api/login', async (c) => {
     const trimmedPassword = body.password.trim()
 
     // ====================================================
-    // ĐĂNG NHẬP ĐÚNG
+    // ĐỌC TRẠNG THÁI RATE LIMIT
     // ====================================================
+
+    let state = {
+      failures: 0,
+      blockedUntil: 0,
+      blockLevel: 0
+    }
+
+    if (c.env.LOGIN_RATE_LIMIT) {
+      try {
+        const raw = await c.env.LOGIN_RATE_LIMIT.get(key)
+
+        if (raw) {
+          state = {
+            ...state,
+            ...JSON.parse(raw)
+          }
+        }
+      } catch (err) {
+        console.error('Rate limit read error:', err)
+      }
+    }
+
+    const now = Date.now()
+
+    // ====================================================
+    // VẪN ĐANG BỊ KHÓA
+    // ====================================================
+
+    if (state.blockedUntil && state.blockedUntil > now) {
+      const retryAfter = Math.ceil(
+        (state.blockedUntil - now) / 1000
+      )
+
+      c.header('Retry-After', String(retryAfter))
+
+      return c.json({
+        error: 'Too Many Requests',
+        message: 'Too many login attempts.',
+        retryAfter
+      }, 429)
+    }
+
+    // ====================================================
+    // ĐÃ HẾT BLOCK
+    // ====================================================
+
+    if (state.blockedUntil && state.blockedUntil <= now) {
+      state.blockedUntil = 0
+    }
+
+    // ====================================================
+    // PASSWORD ĐÚNG
+    // ====================================================
+
     if (trimmedPassword === 'happy106725') {
-      // Đăng nhập thành công -> xóa rate limit
-      await c.env.LOGIN_RATE_LIMIT.delete(key)
+
+      // Login đúng -> reset hoàn toàn bộ đếm
+      if (c.env.LOGIN_RATE_LIMIT) {
+        try {
+          await c.env.LOGIN_RATE_LIMIT.delete(key)
+        } catch (err) {
+          console.error('Rate limit reset error:', err)
+        }
+      }
 
       return c.json({
         success: true,
@@ -131,56 +258,114 @@ app.post('/api/login', async (c) => {
     }
 
     // ====================================================
-    // MẬT KHẨU SAI
+    // PASSWORD SAI
     // ====================================================
-    state.failures++
 
-    // Lần 6-9: bắt chờ 5 giây
-    if (
-      state.failures >= 6 &&
-      state.failures < 10
-    ) {
-      state.blockedUntil = now + LOGIN_WARNING_DELAY
-    }
+    state.failures += 1
 
-    // Lần 10: khóa 1 phút
-    if (state.failures === 10) {
-      state.blockedUntil = now + LOGIN_TEMP_BLOCK
-    }
+    // ====================================================
+    // LẦN 1-5
+    // ====================================================
 
-    // Sau lần 10: khóa 5 phút
-    if (state.failures > 10) {
-      state.blockedUntil = now + LOGIN_LONG_BLOCK
-    }
-
-    // Lưu trạng thái vào KV
-    await c.env.LOGIN_RATE_LIMIT.put(
-      key,
-      JSON.stringify(state),
-      {
-        expirationTtl: 3600
+    if (state.failures <= 5) {
+      if (c.env.LOGIN_RATE_LIMIT) {
+        await c.env.LOGIN_RATE_LIMIT.put(
+          key,
+          JSON.stringify(state),
+          {
+            expirationTtl: 600
+          }
+        )
       }
-    )
+
+      return c.json({
+        error: 'Unauthorized'
+      }, 401)
+    }
 
     // ====================================================
-    // TỪ LẦN 10 TRỞ ĐI -> 429
+    // LẦN 6-9
+    // Delay 5 giây
     // ====================================================
-    if (state.failures >= 10) {
-      const remaining = Math.ceil(
-        (state.blockedUntil - now) / 1000
-      )
 
-      c.header('Retry-After', String(remaining))
+    if (state.failures >= 6 && state.failures <= 9) {
+
+      await new Promise(resolve => setTimeout(resolve, 5000))
+
+      if (c.env.LOGIN_RATE_LIMIT) {
+        await c.env.LOGIN_RATE_LIMIT.put(
+          key,
+          JSON.stringify(state),
+          {
+            expirationTtl: 600
+          }
+        )
+      }
+
+      return c.json({
+        error: 'Unauthorized',
+        message: 'Please wait before trying again.'
+      }, 401)
+    }
+
+    // ====================================================
+    // LẦN 10
+    // BLOCK 1 PHÚT
+    // ====================================================
+
+    if (state.failures === 10) {
+
+      state.blockLevel = 1
+      state.blockedUntil = now + (60 * 1000)
+
+      if (c.env.LOGIN_RATE_LIMIT) {
+        await c.env.LOGIN_RATE_LIMIT.put(
+          key,
+          JSON.stringify(state),
+          {
+            expirationTtl: 600
+          }
+        )
+      }
+
+      c.header('Retry-After', '60')
 
       return c.json({
         error: 'Too Many Requests',
-        retryAfter: remaining
+        message: 'Too many login attempts.',
+        retryAfter: 60
       }, 429)
     }
 
     // ====================================================
-    // LOGIN SAI BÌNH THƯỜNG
+    // SAU KHI BLOCK 1 PHÚT MÀ TIẾP TỤC SPAM
+    // BLOCK 5 PHÚT
     // ====================================================
+
+    if (state.failures > 10) {
+
+      state.blockLevel = 2
+      state.blockedUntil = now + (5 * 60 * 1000)
+
+      if (c.env.LOGIN_RATE_LIMIT) {
+        await c.env.LOGIN_RATE_LIMIT.put(
+          key,
+          JSON.stringify(state),
+          {
+            expirationTtl: 900
+          }
+        )
+      }
+
+      c.header('Retry-After', '300')
+
+      return c.json({
+        error: 'Too Many Requests',
+        message: 'Your IP has been temporarily blocked.',
+        retryAfter: 300
+      }, 429)
+    }
+
     return c.json({
       error: 'Unauthorized'
     }, 401)
@@ -197,6 +382,7 @@ app.post('/api/login', async (c) => {
 // ========================================================
 // API: ADD REPOSITORY
 // ========================================================
+
 app.post('/api/repos', adminAuth, async (c) => {
   c.header('Cache-Control', 'no-store, max-age=0')
 
@@ -252,6 +438,7 @@ app.post('/api/repos', adminAuth, async (c) => {
 // ========================================================
 // API: DELETE REPOSITORY
 // ========================================================
+
 app.delete('/api/repos/:id', adminAuth, async (c) => {
   c.header('Cache-Control', 'no-store, max-age=0')
 
@@ -294,6 +481,7 @@ app.delete('/api/repos/:id', adminAuth, async (c) => {
 // ========================================================
 // STATIC ROUTES
 // ========================================================
+
 app.get('/repo', serveStatic({
   path: './public/repo.html'
 }))
@@ -310,6 +498,7 @@ app.get('/admin', serveStatic({
 // ========================================================
 // FALLBACK
 // ========================================================
+
 app.get('/*', async (c, next) => {
   if (c.req.path.startsWith('/api/')) {
     return c.json({
