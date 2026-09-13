@@ -18,8 +18,6 @@ const AUTH_TOKEN = 'authenticated_session_v1'
 // ========================================================
 // LOGIN RATE LIMIT
 // ========================================================
-const loginAttempts = new Map()
-
 const LOGIN_WARNING_DELAY = 5000
 const LOGIN_TEMP_BLOCK = 60000
 const LOGIN_LONG_BLOCK = 300000
@@ -76,23 +74,23 @@ app.post('/api/login', async (c) => {
   c.header('Cache-Control', 'no-store, max-age=0')
 
   try {
-    // ====================================================
-    // RATE LIMIT CHECK
-    // ====================================================
     const ip = c.req.header('CF-Connecting-IP') || 'Unknown IP'
+    const key = `login:${ip}`
     const now = Date.now()
 
-    let state = loginAttempts.get(ip)
+    // Lấy trạng thái từ Cloudflare KV
+    let state = await c.env.LOGIN_RATE_LIMIT.get(key, 'json')
 
     if (!state) {
       state = {
         failures: 0,
-        blockedUntil: 0,
-        blockLevel: 0
+        blockedUntil: 0
       }
     }
 
-    // Đang bị khóa
+    // ====================================================
+    // ĐANG BỊ KHÓA
+    // ====================================================
     if (state.blockedUntil > now) {
       const remaining = Math.ceil(
         (state.blockedUntil - now) / 1000
@@ -106,14 +104,8 @@ app.post('/api/login', async (c) => {
       }, 429)
     }
 
-    // Hết thời gian khóa
-    if (state.blockedUntil && state.blockedUntil <= now) {
-      state.blockedUntil = 0
-      loginAttempts.set(ip, state)
-    }
-
     // ====================================================
-    // READ REQUEST
+    // ĐỌC REQUEST
     // ====================================================
     const body = await c.req.json()
 
@@ -126,11 +118,11 @@ app.post('/api/login', async (c) => {
     const trimmedPassword = body.password.trim()
 
     // ====================================================
-    // CORRECT PASSWORD
+    // ĐĂNG NHẬP ĐÚNG
     // ====================================================
     if (trimmedPassword === 'happy106725') {
-      // Đăng nhập đúng -> reset số lần sai
-      loginAttempts.delete(ip)
+      // Đăng nhập thành công -> xóa rate limit
+      await c.env.LOGIN_RATE_LIMIT.delete(key)
 
       return c.json({
         success: true,
@@ -139,27 +131,56 @@ app.post('/api/login', async (c) => {
     }
 
     // ====================================================
-    // WRONG PASSWORD
+    // MẬT KHẨU SAI
     // ====================================================
     state.failures++
 
-    // Sau lần thứ 10 -> khóa 5 phút
-    if (state.failures > 10) {
-      state.blockLevel = 2
-      state.blockedUntil = now + LOGIN_LONG_BLOCK
-
-    // Đúng lần thứ 10 -> khóa 1 phút
-    } else if (state.failures === 10) {
-      state.blockLevel = 1
-      state.blockedUntil = now + LOGIN_TEMP_BLOCK
-
-    // Lần 6-9 -> bắt chờ 5 giây
-    } else if (state.failures >= 6) {
+    // Lần 6-9: bắt chờ 5 giây
+    if (
+      state.failures >= 6 &&
+      state.failures < 10
+    ) {
       state.blockedUntil = now + LOGIN_WARNING_DELAY
     }
 
-    loginAttempts.set(ip, state)
+    // Lần 10: khóa 1 phút
+    if (state.failures === 10) {
+      state.blockedUntil = now + LOGIN_TEMP_BLOCK
+    }
 
+    // Sau lần 10: khóa 5 phút
+    if (state.failures > 10) {
+      state.blockedUntil = now + LOGIN_LONG_BLOCK
+    }
+
+    // Lưu trạng thái vào KV
+    await c.env.LOGIN_RATE_LIMIT.put(
+      key,
+      JSON.stringify(state),
+      {
+        expirationTtl: 3600
+      }
+    )
+
+    // ====================================================
+    // TỪ LẦN 10 TRỞ ĐI -> 429
+    // ====================================================
+    if (state.failures >= 10) {
+      const remaining = Math.ceil(
+        (state.blockedUntil - now) / 1000
+      )
+
+      c.header('Retry-After', String(remaining))
+
+      return c.json({
+        error: 'Too Many Requests',
+        retryAfter: remaining
+      }, 429)
+    }
+
+    // ====================================================
+    // LOGIN SAI BÌNH THƯỜNG
+    // ====================================================
     return c.json({
       error: 'Unauthorized'
     }, 401)
