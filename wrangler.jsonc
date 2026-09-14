@@ -12,6 +12,13 @@
     }
   ],
 
+"kv_namespaces": [
+  {
+    "binding": "K1",
+    "id": "ddf3760a1b814a72805bfb9c1d8b6d7d"
+  }
+],
+
   "assets": {
     "not_found_handling": "404-page",
     "directory": "./public"
