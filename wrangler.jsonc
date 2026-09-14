@@ -25,7 +25,7 @@
     "namespace_id": "1001",
     "simple": {
       "limit": 50,
-      "period": 1
+      "period": 60
     }
   }
 ],
