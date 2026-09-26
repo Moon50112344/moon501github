@@ -1,25 +1,970 @@
-WiFi Checker - Moon Studio 
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>WiFi Checker - Moon Studio</title><meta
+name="description"
+content="Download WiFi Checker Beta for Android."
 
-<meta name="description" content="Download WiFi Checker Beta for Android."
+«»
 
-<meta name="theme-color" content="#ffffff"
+<meta
+name="theme-color"
+content="#ffffff"
 
-<meta property="og:title" content="WiFi Checker - Moon Studio"
+«»
 
-<meta property="og:description" content="Download WiFi Checker Beta for Android."
+  <!-- Website Logo / Favicon -->  <link
+    rel="icon"
+    type="image/png"
+    href="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
+  >  <link
+    rel="apple-touch-icon"
+    href="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
+  >  <!-- Open Graph / Website Preview --><meta
+property="og:title"
+content="WiFi Checker - Moon Studio"
 
-<meta property="og:image" content="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
+«»
 
-<meta property="og:image:alt" content="WiFi Checker"
+<meta
+property="og:description"
+content="Download WiFi Checker Beta for Android."
 
-<meta property="og:type" content="website"
+«»
 
-<meta name="twitter:card" content="summary_large_image"
+<meta
+property="og:image"
+content="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
 
-<meta name="twitter:title" content="WiFi Checker - Moon Studio"
+«»
 
-<meta name="twitter:description" content="Download WiFi Checker Beta for Android."
+<meta
+property="og:image:alt"
+content="WiFi Checker"
 
-<meta name="twitter:image" content="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
+«»
 
-* { box-sizing: border-box; } html { scroll-behavior: smooth; } body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #202124; background: #ffffff; } a { color: inherit; text-decoration: none; } .header { height: 64px; border-bottom: 1px solid #dadce0; background: #ffffff; position: sticky; top: 0; z-index: 10; } .header-inner { max-width: 1200px; height: 100%; margin: auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; } .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 500; } .brand-mark { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; } .header-right { color: #5f6368; font-size: 14px; } .container { max-width: 1100px; margin: auto; padding: 40px 24px 0; } .app { display: flex; align-items: center; gap: 32px; padding-bottom: 40px; border-bottom: 1px solid #dadce0; } .app-icon { width: 180px; height: 180px; border-radius: 28px; object-fit: cover; flex-shrink: 0; } .app-content { flex: 1; } .app-title { margin: 0 0 8px; font-size: 36px; line-height: 1.2; font-weight: 500; } .developer { display: inline-block; color: #1a73e8; font-size: 16px; margin-bottom: 24px; } .developer:hover { text-decoration: underline; } .metadata { display: flex; margin-bottom: 28px; } .metadata-item { min-width: 120px; padding: 0 22px; border-right: 1px solid #dadce0; display: flex; flex-direction: column; gap: 6px; } .metadata-item:first-child { padding-left: 0; } .metadata-item:last-child { border-right: none; } .metadata-main { font-size: 15px; font-weight: 600; } .metadata-sub { color: #5f6368; font-size: 13px; } .app-actions { display: flex; align-items: center; gap: 12px; } .download-button { display: inline-flex; align-items: center; justify-content: center; min-width: 140px; height: 44px; padding: 0 24px; border-radius: 24px; background: #1a73e8; color: #ffffff; font-size: 15px; font-weight: 600; transition: background 0.15s ease; } .download-button:hover { background: #1769d2; } .section { padding: 32px 0; border-bottom: 1px solid #dadce0; } .section-title { margin: 0 0 18px; font-size: 22px; font-weight: 500; } .description { max-width: 800px; margin: 0; color: #5f6368; font-size: 15px; line-height: 1.7; } .release { max-width: 800px; } .release-title { margin-bottom: 8px; font-size: 16px; font-weight: 600; } .release-text { margin: 0; color: #5f6368; font-size: 15px; line-height: 1.6; } /* SCREENSHOTS */ .screenshots { display: flex; gap: 18px; overflow-x: auto; padding: 4px 0 8px; } .screenshots img { width: 280px; height: auto; object-fit: contain; border-radius: 14px; border: 1px solid #dadce0; flex-shrink: 0; display: block; cursor: default; } /* RATINGS & REVIEWS */ .ratings { display: flex; align-items: flex-start; gap: 42px; max-width: 800px; } .rating-summary { min-width: 130px; text-align: center; } .rating-number { font-size: 48px; line-height: 1; font-weight: 400; margin-bottom: 10px; } .stars { color: #fbbc04; font-size: 20px; letter-spacing: 2px; margin-bottom: 7px; } .rating-count { color: #5f6368; font-size: 13px; } .rating-bars { flex: 1; max-width: 430px; } .rating-row { display: flex; align-items: center; gap: 10px; height: 22px; font-size: 13px; color: #5f6368; } .rating-row span:first-child { width: 12px; text-align: right; } .bar { flex: 1; height: 8px; background: #e8eaed; border-radius: 5px; overflow: hidden; } .bar-fill { height: 100%; background: #fbbc04; border-radius: 5px; } .review { max-width: 800px; margin-top: 30px; padding-top: 24px; border-top: 1px solid #dadce0; } .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; } .review-user { font-size: 15px; font-weight: 600; } .review-date { color: #5f6368; font-size: 13px; } .review-stars { color: #fbbc04; letter-spacing: 1px; font-size: 16px; margin-bottom: 8px; } .review-text { margin: 0; color: #5f6368; font-size: 15px; line-height: 1.6; } .footer { border-top: 1px solid #dadce0; } .footer-inner { max-width: 1100px; margin: auto; padding: 24px; display: flex; justify-content: space-between; color: #5f6368; font-size: 13px; } @media (max-width: 700px) { .header-inner { padding: 0 16px; } .header-right { display: none; } .container { padding: 28px 18px 0; } .app { align-items: flex-start; gap: 20px; } .app-icon { width: 104px; height: 104px; border-radius: 20px; } .app-title { font-size: 27px; } .developer { font-size: 14px; margin-bottom: 18px; } .metadata { margin-bottom: 20px; } .metadata-item { min-width: auto; padding: 0 12px; } .metadata-item:first-child { padding-left: 0; } .metadata-main { font-size: 13px; } .metadata-sub { font-size: 11px; } .app-actions { gap: 8px; } .download-button { min-width: 120px; height: 40px; padding: 0 18px; font-size: 14px; } .section { padding: 28px 0; } .section-title { font-size: 20px; } .screenshots img { width: 280px; height: auto; } .ratings { gap: 24px; } .rating-summary { min-width: 105px; } .rating-number { font-size: 40px; } .stars { font-size: 17px; } .footer-inner { padding: 20px 18px; flex-direction: column; gap: 8px; } } @media (max-width: 460px) { .app { gap: 16px; } .app-icon { width: 90px; height: 90px; } .app-title { font-size: 23px; } .metadata-item { padding: 0 8px; } .metadata-main { font-size: 12px; } .metadata-sub { font-size: 10px; } .screenshots img { width: 280px; height: auto; } .ratings { flex-direction: column; gap: 24px; } .rating-summary { text-align: left; } .rating-bars { width: 100%; } } <div class="header-inner"> <a href="/" class="brand"> <img class="brand-mark" src="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png" alt="WiFi Checker" > <span> WiFi Checker </span> </a> <span class="header-right"> Moon Studio </span> </div> <!-- APP --> <section class="app"> <img class="app-icon" src="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png" alt="WiFi Checker app icon" > <div class="app-content"> <h1 class="app-title"> WiFi Checker </h1> <a class="developer" href="/moonstudio.html" > Moon Studio </a> <div class="metadata"> <div class="metadata-item"> <span class="metadata-main"> Beta </span> <span class="metadata-sub"> Version </span> </div> <div class="metadata-item"> <span class="metadata-main"> Android </span> <span class="metadata-sub"> Platform </span> </div> <div class="metadata-item"> <span class="metadata-main"> v1.0 </span> <span class="metadata-sub"> Release </span> </div> </div> <div class="app-actions"> <a class="download-button" href="/demowificheckerbeta" > Demo </a> <a class="download-button" href="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker/main/wfi-checker-beta-v1.apk" download > Download </a> </div> </div> </section> <!-- ABOUT --> <section class="section" id="about" > <h2 class="section-title"> About this app </h2> <p class="description"> WiFi Checker is a professional tool designed to help users monitor and analyze their local network. Discover connected devices, check network latency, view connection information and monitor network activity directly from your Android device. </p> </section> <!-- WHAT'S NEW --> <section class="section"> <h2 class="section-title"> What's new </h2> <div class="release"> <div class="release-title"> WiFi Checker Beta v1.0 </div> <p class="release-text"> Initial beta release of WiFi Checker. </p> </div> </section> <!-- SCREENSHOTS --> <section class="section"> <h2 class="section-title"> Screenshots </h2> <div class="screenshots"> <img src="https://6a8933a797833836f65581dd.imgix.net/sandbox/Screenshot_20260822_115835_Wifi%20Checker.jpg" alt="WiFi Checker screenshot" > </div> </section> <!-- RATINGS --> <section class="section"> <h2 class="section-title"> Ratings & reviews </h2> <div class="ratings"> <div class="rating-summary"> <div class="rating-number"> 4.8 </div> <div class="stars"> ★★★★★ </div> <div class="rating-count"> 24 reviews </div> </div> <div class="rating-bars"> <div class="rating-row"> <span> 5 </span> <div class="bar"> <div class="bar-fill" style="width: 82%;" ></div> </div> </div> <div class="rating-row"> <span> 4 </span> <div class="bar"> <div class="bar-fill" style="width: 12%;" ></div> </div> </div> <div class="rating-row"> <span> 3 </span> <div class="bar"> <div class="bar-fill" style="width: 4%;" ></div> </div> </div> <div class="rating-row"> <span> 2 </span> <div class="bar"> <div class="bar-fill" style="width: 1%;" ></div> </div> </div> <div class="rating-row"> <span> 1 </span> <div class="bar"> <div class="bar-fill" style="width: 1%;" ></div> </div> </div> </div> </div> <!-- REVIEW --> <div class="review"> <div class="review-header"> <span class="review-user"> Moon Studio </span> <span class="review-date"> Beta </span> </div> <div class="review-stars"> ★★★★★ </div> <p class="review-text"> Thanks for testing WiFi Checker Beta. Your feedback helps us improve the app and prepare future releases. </p> </div> </section> <div class="footer-inner"> <span> © 2026 Moon Studio </span> <span> WiFi Checker Beta </span> </div> 
+<meta
+property="og:type"
+content="website"
+
+«»
+
+  <!-- Twitter / X Preview --><meta
+name="twitter:card"
+content="summary_large_image"
+
+«»
+
+<meta
+name="twitter:title"
+content="WiFi Checker - Moon Studio"
+
+«»
+
+<meta
+name="twitter:description"
+content="Download WiFi Checker Beta for Android."
+
+«»
+
+<meta
+name="twitter:image"
+content="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
+
+«»
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #202124;
+      background: #ffffff;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .header {
+      height: 64px;
+      border-bottom: 1px solid #dadce0;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      height: 100%;
+      margin: auto;
+      padding: 0 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .header-right {
+      color: #5f6368;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 24px 0;
+    }
+
+    .app {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+
+      padding-bottom: 40px;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    .app-icon {
+      width: 180px;
+      height: 180px;
+
+      border-radius: 28px;
+      object-fit: cover;
+
+      flex-shrink: 0;
+    }
+
+    .app-content {
+      flex: 1;
+    }
+
+    .app-title {
+      margin: 0 0 8px;
+
+      font-size: 36px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    .developer {
+      display: inline-block;
+
+      color: #1a73e8;
+      font-size: 16px;
+
+      margin-bottom: 24px;
+    }
+
+    .developer:hover {
+      text-decoration: underline;
+    }
+
+    .metadata {
+      display: flex;
+      margin-bottom: 28px;
+    }
+
+    .metadata-item {
+      min-width: 120px;
+
+      padding: 0 22px;
+
+      border-right: 1px solid #dadce0;
+
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .metadata-item:first-child {
+      padding-left: 0;
+    }
+
+    .metadata-item:last-child {
+      border-right: none;
+    }
+
+    .metadata-main {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .metadata-sub {
+      color: #5f6368;
+      font-size: 13px;
+    }
+
+    .app-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .download-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-width: 140px;
+      height: 44px;
+
+      padding: 0 24px;
+
+      border-radius: 24px;
+
+      background: #1a73e8;
+      color: #ffffff;
+
+      font-size: 15px;
+      font-weight: 600;
+
+      transition: background 0.15s ease;
+    }
+
+    .download-button:hover {
+      background: #1769d2;
+    }
+
+    .section {
+      padding: 32px 0;
+
+      border-bottom: 1px solid #dadce0;
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .description {
+      max-width: 800px;
+
+      margin: 0;
+
+      color: #5f6368;
+
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .release {
+      max-width: 800px;
+    }
+
+    .release-title {
+      margin-bottom: 8px;
+
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .release-text {
+      margin: 0;
+
+      color: #5f6368;
+
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* SCREENSHOTS */
+
+    .screenshots {
+      display: flex;
+      gap: 18px;
+
+      overflow-x: auto;
+
+      padding: 4px 0 8px;
+    }
+
+    .screenshots img {
+      width: 280px;
+      height: auto;
+
+      object-fit: contain;
+
+      border-radius: 14px;
+      border: 1px solid #dadce0;
+
+      flex-shrink: 0;
+      display: block;
+
+      cursor: default;
+    }
+
+    /* RATINGS & REVIEWS */
+
+    .ratings {
+      display: flex;
+      align-items: flex-start;
+
+      gap: 42px;
+
+      max-width: 800px;
+    }
+
+    .rating-summary {
+      min-width: 130px;
+
+      text-align: center;
+    }
+
+    .rating-number {
+      font-size: 48px;
+      line-height: 1;
+
+      font-weight: 400;
+
+      margin-bottom: 10px;
+    }
+
+    .stars {
+      color: #fbbc04;
+
+      font-size: 20px;
+      letter-spacing: 2px;
+
+      margin-bottom: 7px;
+    }
+
+    .rating-count {
+      color: #5f6368;
+
+      font-size: 13px;
+    }
+
+    .rating-bars {
+      flex: 1;
+
+      max-width: 430px;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      height: 22px;
+
+      font-size: 13px;
+      color: #5f6368;
+    }
+
+    .rating-row span:first-child {
+      width: 12px;
+
+      text-align: right;
+    }
+
+    .bar {
+      flex: 1;
+
+      height: 8px;
+
+      background: #e8eaed;
+
+      border-radius: 5px;
+
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+
+      background: #fbbc04;
+
+      border-radius: 5px;
+    }
+
+    .review {
+      max-width: 800px;
+
+      margin-top: 30px;
+      padding-top: 24px;
+
+      border-top: 1px solid #dadce0;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      margin-bottom: 12px;
+    }
+
+    .review-user {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .review-date {
+      color: #5f6368;
+
+      font-size: 13px;
+    }
+
+    .review-stars {
+      color: #fbbc04;
+
+      letter-spacing: 1px;
+      font-size: 16px;
+
+      margin-bottom: 8px;
+    }
+
+    .review-text {
+      margin: 0;
+
+      color: #5f6368;
+
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      border-top: 1px solid #dadce0;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+
+      margin: auto;
+      padding: 24px;
+
+      display: flex;
+      justify-content: space-between;
+
+      color: #5f6368;
+
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+
+      .header-inner {
+        padding: 0 16px;
+      }
+
+      .header-right {
+        display: none;
+      }
+
+      .container {
+        padding: 28px 18px 0;
+      }
+
+      .app {
+        align-items: flex-start;
+        gap: 20px;
+      }
+
+      .app-icon {
+        width: 104px;
+        height: 104px;
+
+        border-radius: 20px;
+      }
+
+      .app-title {
+        font-size: 27px;
+      }
+
+      .developer {
+        font-size: 14px;
+
+        margin-bottom: 18px;
+      }
+
+      .metadata {
+        margin-bottom: 20px;
+      }
+
+      .metadata-item {
+        min-width: auto;
+
+        padding: 0 12px;
+      }
+
+      .metadata-item:first-child {
+        padding-left: 0;
+      }
+
+      .metadata-main {
+        font-size: 13px;
+      }
+
+      .metadata-sub {
+        font-size: 11px;
+      }
+
+      .app-actions {
+        gap: 8px;
+      }
+
+      .download-button {
+        min-width: 120px;
+        height: 40px;
+
+        padding: 0 18px;
+
+        font-size: 14px;
+      }
+
+      .section {
+        padding: 28px 0;
+      }
+
+      .section-title {
+        font-size: 20px;
+      }
+
+      .screenshots img {
+        width: 280px;
+        height: auto;
+      }
+
+      .ratings {
+        gap: 24px;
+      }
+
+      .rating-summary {
+        min-width: 105px;
+      }
+
+      .rating-number {
+        font-size: 40px;
+      }
+
+      .stars {
+        font-size: 17px;
+      }
+
+      .footer-inner {
+        padding: 20px 18px;
+
+        flex-direction: column;
+
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 460px) {
+
+      .app {
+        gap: 16px;
+      }
+
+      .app-icon {
+        width: 90px;
+        height: 90px;
+      }
+
+      .app-title {
+        font-size: 23px;
+      }
+
+      .metadata-item {
+        padding: 0 8px;
+      }
+
+      .metadata-main {
+        font-size: 12px;
+      }
+
+      .metadata-sub {
+        font-size: 10px;
+      }
+
+      .screenshots img {
+        width: 280px;
+        height: auto;
+      }
+
+      .ratings {
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .rating-summary {
+        text-align: left;
+      }
+
+      .rating-bars {
+        width: 100%;
+      }
+    }
+  </style></head><body>  <!-- HEADER -->  <header class="header"><div class="header-inner">
+
+  <a href="/" class="brand">
+
+    <img
+      class="brand-mark"
+      src="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
+      alt="WiFi Checker"
+    >
+
+    <span>
+      WiFi Checker
+    </span>
+
+  </a>
+
+  <span class="header-right">
+    Moon Studio
+  </span>
+
+</div>
+
+  </header>  <main class="container"><!-- APP -->
+
+<section class="app">
+
+  <img
+    class="app-icon"
+    src="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker-Beta/main/playstore_icon.png"
+    alt="WiFi Checker app icon"
+  >
+
+  <div class="app-content">
+
+    <h1 class="app-title">
+      WiFi Checker
+    </h1>
+
+    <a
+      class="developer"
+      href="/moonstudio.html"
+    >
+      Moon Studio
+    </a>
+
+    <div class="metadata">
+
+      <div class="metadata-item">
+
+        <span class="metadata-main">
+          Beta
+        </span>
+
+        <span class="metadata-sub">
+          Version
+        </span>
+
+      </div>
+
+
+      <div class="metadata-item">
+
+        <span class="metadata-main">
+          Android
+        </span>
+
+        <span class="metadata-sub">
+          Platform
+        </span>
+
+      </div>
+
+
+      <div class="metadata-item">
+
+        <span class="metadata-main">
+          v1.0
+        </span>
+
+        <span class="metadata-sub">
+          Release
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="app-actions">
+
+      <a
+        class="download-button"
+        href="/demowificheckerbeta"
+      >
+        Demo
+      </a>
+
+      <a
+        class="download-button"
+        href="https://raw.githubusercontent.com/Moon50112344/Wifi-Checker/main/wfi-checker-beta-v1.apk"
+        download
+      >
+        Download
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ABOUT -->
+
+<section
+  class="section"
+  id="about"
+>
+
+  <h2 class="section-title">
+    About this app
+  </h2>
+
+  <p class="description">
+    WiFi Checker is a professional tool designed to help users
+    monitor and analyze their local network. Discover connected
+    devices, check network latency, view connection information
+    and monitor network activity directly from your Android device.
+  </p>
+
+</section>
+
+
+<!-- WHAT'S NEW -->
+
+<section class="section">
+
+  <h2 class="section-title">
+    What's new
+  </h2>
+
+  <div class="release">
+
+    <div class="release-title">
+      WiFi Checker Beta v1.0
+    </div>
+
+    <p class="release-text">
+      Initial beta release of WiFi Checker.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- SCREENSHOTS -->
+
+<section class="section">
+
+  <h2 class="section-title">
+    Screenshots
+  </h2>
+
+  <div class="screenshots">
+
+    <img
+      src="https://6a8933a797833836f65581dd.imgix.net/sandbox/Screenshot_20260822_115835_Wifi%20Checker.jpg"
+      alt="WiFi Checker screenshot"
+    >
+
+  </div>
+
+</section>
+
+
+<!-- RATINGS -->
+
+<section class="section">
+
+  <h2 class="section-title">
+    Ratings & reviews
+  </h2>
+
+
+  <div class="ratings">
+
+    <div class="rating-summary">
+
+      <div class="rating-number">
+        4.8
+      </div>
+
+      <div class="stars">
+        ★★★★★
+      </div>
+
+      <div class="rating-count">
+        24 reviews
+      </div>
+
+    </div>
+
+
+    <div class="rating-bars">
+
+      <div class="rating-row">
+
+        <span>
+          5
+        </span>
+
+        <div class="bar">
+
+          <div
+            class="bar-fill"
+            style="width: 82%;"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <div class="rating-row">
+
+        <span>
+          4
+        </span>
+
+        <div class="bar">
+
+          <div
+            class="bar-fill"
+            style="width: 12%;"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <div class="rating-row">
+
+        <span>
+          3
+        </span>
+
+        <div class="bar">
+
+          <div
+            class="bar-fill"
+            style="width: 4%;"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <div class="rating-row">
+
+        <span>
+          2
+        </span>
+
+        <div class="bar">
+
+          <div
+            class="bar-fill"
+            style="width: 1%;"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <div class="rating-row">
+
+        <span>
+          1
+        </span>
+
+        <div class="bar">
+
+          <div
+            class="bar-fill"
+            style="width: 1%;"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- REVIEW -->
+
+  <div class="review">
+
+    <div class="review-header">
+
+      <span class="review-user">
+        Moon Studio
+      </span>
+
+      <span class="review-date">
+        Beta
+      </span>
+
+    </div>
+
+    <div class="review-stars">
+      ★★★★★
+    </div>
+
+    <p class="review-text">
+      Thanks for testing WiFi Checker Beta. Your feedback helps us
+      improve the app and prepare future releases.
+    </p>
+
+  </div>
+
+</section>
+
+  </main>  <!-- FOOTER -->  <footer class="footer"><div class="footer-inner">
+
+  <span>
+    © 2026 Moon Studio
+  </span>
+
+  <span>
+    WiFi Checker Beta
+  </span>
+
+</div>
+
+  </footer></body>
+</html>
