@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fast Browser</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  background: #f4f7fa;
+  color: #111;
+
+  overflow: hidden;
+}
+
+/* =========================
+   APP
+========================= */
+
+.app {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar {
+  height: 64px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 10px 12px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+/* =========================
+   ICON BUTTON
+========================= */
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #252a2f;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+.icon-button:hover {
+  background: #eef2f5;
+}
+
+.icon-button:active {
+  transform: scale(0.94);
+}
+
+.icon-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.icon-button svg {
+  width: 21px;
+  height: 21px;
+
+  fill: none;
+  stroke: currentColor;
+
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* =========================
+   URL BOX
+========================= */
+
+.url-box {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 12px;
+
+  border: 1px solid #d9dee3;
+  border-radius: 12px;
+
+  background: #f5f7f9;
+}
+
+.url-box:focus-within {
+  border-color: #1976d2;
+  background: #ffffff;
+}
+
+.url-icon {
+  width: 18px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  margin-right: 8px;
+
+  fill: none;
+  stroke: #66717b;
+
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#urlInput {
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  font-size: 14px;
+  color: #15191d;
+}
+
+#urlInput::placeholder {
+  color: #8a949d;
+}
+
+/* =========================
+   OPEN BUTTON
+========================= */
+
+.open-button {
+  height: 42px;
+
+  flex-shrink: 0;
+
+  padding: 0 17px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: #1976d2;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.open-button:hover {
+  background: #1565c0;
+}
+
+.open-button:active {
+  transform: scale(0.97);
+}
+
+/* =========================
+   BROWSER
+========================= */
+
+.browser {
+  position: relative;
+
+  flex: 1;
+  min-height: 0;
+
+  background: #ffffff;
+}
+
+/* =========================
+   IFRAME
+========================= */
+
+#browserFrame {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+
+  background: #ffffff;
+}
+
+/* =========================
+   EMPTY SCREEN
+========================= */
+
+.empty-screen {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  background: #ffffff;
+
+  pointer-events: none;
+
+  transition: opacity 0.15s ease;
+}
+
+.empty-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.empty-content {
+  width: 100%;
+  max-width: 420px;
+
+  text-align: center;
+}
+
+.empty-logo {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  background: #eef4fb;
+  color: #1976d2;
+}
+
+.empty-logo svg {
+  width: 34px;
+  height: 34px;
+
+  fill: none;
+  stroke: currentColor;
+
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.empty-title {
+  margin-bottom: 7px;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.empty-text {
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #727c85;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: transparent;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  opacity: 0;
+}
+
+.loading.active {
+  opacity: 1;
+}
+
+.loading::after {
+  content: "";
+
+  position: absolute;
+
+  left: -35%;
+
+  width: 35%;
+  height: 100%;
+
+  background: #1976d2;
+
+  animation: loading 0.8s linear infinite;
+}
+
+@keyframes loading {
+  from {
+    left: -35%;
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+/* =========================
+   FULLSCREEN
+========================= */
+
+.app.fullscreen .topbar {
+  display: none;
+}
+
+.app.fullscreen .browser {
+  width: 100%;
+  height: 100%;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .topbar {
+    height: 58px;
+    padding: 8px;
+    gap: 5px;
+  }
+
+  .icon-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .url-box {
+    height: 40px;
+  }
+
+  .open-button {
+    height: 40px;
+
+    padding: 0 13px;
+
+    font-size: 13px;
+  }
+
+  .empty-logo {
+    width: 62px;
+    height: 62px;
+  }
+
+  .empty-title {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .topbar {
+    gap: 4px;
+  }
+
+  .desktop-button {
+    display: none;
+  }
+
+  .open-button {
+    width: 43px;
+
+    padding: 0;
+
+    font-size: 0;
+  }
+
+  .open-button::before {
+    content: "";
+
+    display: block;
+
+    width: 19px;
+    height: 19px;
+
+    margin: auto;
+
+    border: 2px solid #fff;
+    border-left-color: transparent;
+
+    border-radius: 50%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app" id="app">
+
+  <!-- =====================
+       TOP BAR
+  ====================== -->
+
+  <header class="topbar">
+
+    <!-- BACK -->
+    <button
+      class="icon-button desktop-button"
+      id="backButton"
+      title="Quay lại"
+      aria-label="Quay lại"
+      disabled
+    >
+      <svg viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+    </button>
+
+
+    <!-- FORWARD -->
+    <button
+      class="icon-button desktop-button"
+      id="forwardButton"
+      title="Tiến tới"
+      aria-label="Tiến tới"
+      disabled
+    >
+      <svg viewBox="0 0 24 24">
+        <path d="M9 18l6-6-6-6"></path>
+      </svg>
+    </button>
+
+
+    <!-- RELOAD -->
+    <button
+      class="icon-button"
+      id="reloadButton"
+      title="Tải lại"
+      aria-label="Tải lại"
+    >
+      <svg viewBox="0 0 24 24">
+        <path d="M20 11a8 8 0 0 0-14.7-4.2L4 8"></path>
+        <path d="M4 4v4h4"></path>
+        <path d="M4 13a8 8 0 0 0 14.7 4.2L20 16"></path>
+        <path d="M20 20v-4h-4"></path>
+      </svg>
+    </button>
+
+
+    <!-- URL -->
+    <div class="url-box">
+
+      <svg
+        class="url-icon"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+        ></circle>
+
+        <path
+          d="M3 12h18"
+        ></path>
+
+        <path
+          d="M12 3c2.3 2.5 3.5 5.5 3.5 9s-1.2 6.5-3.5 9c-2.3-2.5-3.5-5.5-3.5-9S9.7 5.5 12 3z"
+        ></path>
+      </svg>
+
+
+      <input
+        id="urlInput"
+        type="url"
+        inputmode="url"
+        autocomplete="url"
+        autocapitalize="none"
+        autocorrect="off"
+        spellcheck="false"
+        placeholder="Nhập URL..."
+      >
+
+    </div>
+
+
+    <!-- OPEN -->
+    <button
+      class="open-button"
+      id="openButton"
+    >
+      Mở
+    </button>
+
+
+    <!-- HOME -->
+    <button
+      class="icon-button desktop-button"
+      id="homeButton"
+      title="Trang chủ"
+      aria-label="Trang chủ"
+    >
+      <svg viewBox="0 0 24 24">
+        <path d="M3 10.5L12 3l9 7.5"></path>
+        <path d="M5 9v11h14V9"></path>
+        <path d="M9 20v-6h6v6"></path>
+      </svg>
+    </button>
+
+
+    <!-- FULLSCREEN -->
+    <button
+      class="icon-button"
+      id="fullscreenButton"
+      title="Toàn màn hình"
+      aria-label="Toàn màn hình"
+    >
+      <svg
+        id="fullscreenIcon"
+        viewBox="0 0 24 24"
+      >
+        <path d="M8 3H3v5"></path>
+        <path d="M16 3h5v5"></path>
+        <path d="M8 21H3v-5"></path>
+        <path d="M21 16v5h-5"></path>
+      </svg>
+    </button>
+
+  </header>
+
+
+  <!-- =====================
+       BROWSER AREA
+  ====================== -->
+
+  <main
+    class="browser"
+    id="browser"
+  >
+
+    <div
+      class="loading"
+      id="loading"
+    ></div>
+
+
+    <iframe
+      id="browserFrame"
+      title="Browser"
+      allow="fullscreen"
+      allowfullscreen
+    ></iframe>
+
+
+    <!-- EMPTY SCREEN -->
+
+    <div
+      class="empty-screen"
+      id="emptyScreen"
+    >
+
+      <div class="empty-content">
+
+        <div class="empty-logo">
+
+          <svg viewBox="0 0 24 24">
+
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+            ></circle>
+
+            <path
+              d="M3 12h18"
+            ></path>
+
+            <path
+              d="M12 3c2.3 2.5 3.5 5.5 3.5 9s-1.2 6.5-3.5 9c-2.3-2.5-3.5-5.5-3.5-9S9.7 5.5 12 3z"
+            ></path>
+
+          </svg>
+
+        </div>
+
+
+        <div class="empty-title">
+          Fast Browser
+        </div>
+
+
+        <div class="empty-text">
+          Nhập địa chỉ website ở thanh URL phía trên để bắt đầu.
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script>
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const app =
+  document.getElementById("app");
+
+const browser =
+  document.getElementById("browser");
+
+const frame =
+  document.getElementById("browserFrame");
+
+const urlInput =
+  document.getElementById("urlInput");
+
+const openButton =
+  document.getElementById("openButton");
+
+const reloadButton =
+  document.getElementById("reloadButton");
+
+const backButton =
+  document.getElementById("backButton");
+
+const forwardButton =
+  document.getElementById("forwardButton");
+
+const homeButton =
+  document.getElementById("homeButton");
+
+const fullscreenButton =
+  document.getElementById("fullscreenButton");
+
+const emptyScreen =
+  document.getElementById("emptyScreen");
+
+const loading =
+  document.getElementById("loading");
+
+
+/* =========================
+   STATE
+========================= */
+
+let currentURL = "";
+
+let hasPage = false;
+
+
+/* =========================
+   NORMALIZE URL
+========================= */
+
+function normalizeURL(value) {
+
+  let url = value.trim();
+
+  if (!url) {
+    return null;
+  }
+
+
+  /*
+   * Nếu người dùng nhập:
+   *
+   * example.com
+   *
+   * sẽ tự thành:
+   *
+   * https://example.com
+   */
+
+  if (
+    !url.startsWith("http://") &&
+    !url.startsWith("https://")
+  ) {
+
+    url = "https://" + url;
+
+  }
+
+
+  try {
+
+    const parsed =
+      new URL(url);
+
+
+    /*
+     * Chỉ cho phép HTTP/HTTPS.
+     */
+
+    if (
+      parsed.protocol !== "http:" &&
+      parsed.protocol !== "https:"
+    ) {
+
+      return null;
+
+    }
+
+
+    return parsed.href;
+
+  } catch {
+
+    return null;
+
+  }
+}
+
+
+/* =========================
+   OPEN URL
+========================= */
+
+function openURL() {
+
+  const url =
+    normalizeURL(
+      urlInput.value
+    );
+
+
+  if (!url) {
+
+    urlInput.focus();
+
+    return;
+
+  }
+
+
+  currentURL = url;
+
+  hasPage = true;
+
+
+  /*
+   * Cập nhật thanh URL.
+   */
+
+  urlInput.value = url;
+
+
+  /*
+   * Hiện loading.
+   */
+
+  loading.classList.add(
+    "active"
+  );
+
+
+  /*
+   * Ẩn màn hình bắt đầu.
+   */
+
+  emptyScreen.classList.add(
+    "hidden"
+  );
+
+
+  /*
+   * Mở trực tiếp URL.
+   *
+   * Không fetch qua server.
+   * Không proxy.
+   * Không xử lý trung gian.
+   */
+
+  frame.src = url;
+
+
+  updateButtons();
+
+}
+
+
+/* =========================
+   RELOAD
+========================= */
+
+function reloadPage() {
+
+  if (!hasPage) {
+    return;
+  }
+
+
+  loading.classList.add(
+    "active"
+  );
+
+
+  /*
+   * Reload trực tiếp iframe.
+   */
+
+  try {
+
+    frame.contentWindow.location.reload();
+
+  } catch {
+
+    /*
+     * Một số trang cross-origin
+     * không cho truy cập location.
+     *
+     * Khi đó gán lại src.
+     */
+
+    frame.src = currentURL;
+
+  }
+
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack() {
+
+  if (!hasPage) {
+    return;
+  }
+
+
+  try {
+
+    frame.contentWindow.history.back();
+
+  } catch {
+
+    /*
+     * Cross-origin có thể giới hạn
+     * quyền truy cập history.
+     */
+
+  }
+
+}
+
+
+/* =========================
+   FORWARD
+========================= */
+
+function goForward() {
+
+  if (!hasPage) {
+    return;
+  }
+
+
+  try {
+
+    frame.contentWindow.history.forward();
+
+  } catch {
+
+    /*
+     * Cross-origin có thể giới hạn
+     * quyền truy cập history.
+     */
+
+  }
+
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+function goHome() {
+
+  frame.src = "";
+
+  currentURL = "";
+
+  hasPage = false;
+
+  urlInput.value = "";
+
+  emptyScreen.classList.remove(
+    "hidden"
+  );
+
+  loading.classList.remove(
+    "active"
+  );
+
+  updateButtons();
+
+  urlInput.focus();
+
+}
+
+
+/* =========================
+   FULLSCREEN
+========================= */
+
+async function toggleFullscreen() {
+
+  try {
+
+    if (
+      document.fullscreenElement
+    ) {
+
+      await document.exitFullscreen();
+
+      return;
+
+    }
+
+
+    await app.requestFullscreen();
+
+  } catch {
+
+    /*
+     * Fallback cho môi trường
+     * không hỗ trợ Fullscreen API.
+     */
+
+    app.classList.toggle(
+      "fullscreen"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   UPDATE BUTTONS
+========================= */
+
+function updateButtons() {
+
+  backButton.disabled =
+    !hasPage;
+
+  forwardButton.disabled =
+    !hasPage;
+
+  reloadButton.disabled =
+    !hasPage;
+
+}
+
+
+/* =========================
+   EVENTS
+========================= */
+
+openButton.addEventListener(
+  "click",
+  openURL
+);
+
+
+reloadButton.addEventListener(
+  "click",
+  reloadPage
+);
+
+
+backButton.addEventListener(
+  "click",
+  goBack
+);
+
+
+forwardButton.addEventListener(
+  "click",
+  goForward
+);
+
+
+homeButton.addEventListener(
+  "click",
+  goHome
+);
+
+
+fullscreenButton.addEventListener(
+  "click",
+  toggleFullscreen
+);
+
+
+/* =========================
+   ENTER
+========================= */
+
+urlInput.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (
+      event.key === "Enter"
+    ) {
+
+      event.preventDefault();
+
+      openURL();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   IFRAME LOAD
+========================= */
+
+frame.addEventListener(
+  "load",
+  function() {
+
+    loading.classList.remove(
+      "active"
+    );
+
+
+    /*
+     * Chỉ cập nhật URL nếu có thể
+     * đọc được location của iframe.
+     *
+     * Cross-origin sẽ bị trình duyệt
+     * chặn nên giữ URL hiện tại.
+     */
+
+    try {
+
+      const frameURL =
+        frame.contentWindow.location.href;
+
+
+      if (
+        frameURL &&
+        frameURL !== "about:blank"
+      ) {
+
+        currentURL = frameURL;
+
+        urlInput.value = frameURL;
+
+      }
+
+    } catch {
+
+      /*
+       * Cross-origin:
+       * không làm gì.
+       */
+
+    }
+
+  }
+);
+
+
+/* =========================
+   FULLSCREEN CHANGE
+========================= */
+
+document.addEventListener(
+  "fullscreenchange",
+  function() {
+
+    if (
+      document.fullscreenElement
+    ) {
+
+      app.classList.add(
+        "fullscreen"
+      );
+
+    } else {
+
+      app.classList.remove(
+        "fullscreen"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================
+   ESCAPE FALLBACK
+========================= */
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (
+      event.key === "Escape" &&
+      !document.fullscreenElement
+    ) {
+
+      app.classList.remove(
+        "fullscreen"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================
+   START
+========================= */
+
+updateButtons();
+
+urlInput.focus();
+
+</script>
+
+</body>
+</html>
